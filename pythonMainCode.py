@@ -155,8 +155,7 @@ def mainScreen():
     history = pubnub.history().channel(channel).count(50).pn_async(history_callback)
     tk.protocol("WM_DELETE_WINDOW", closeProtocol)
 
-if __name__ == '__main__':
-    mainScreen()
-    configWindow(1)
-    canvas.bind("<Configure>", configWindow)
-    mainloop()
+mainScreen()
+configWindow(1)
+canvas.bind("<Configure>", configWindow)
+mainloop()
