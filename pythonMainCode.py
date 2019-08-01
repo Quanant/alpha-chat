@@ -6,10 +6,11 @@ from pubnub.exceptions import PubNubException
 import time
 from tkinter import *
 from tkinter import messagebox as box
-import atexit
+import sys
 import PIL.Image
 import PIL.ImageTk
 import pickle
+import requests
 
 tk = Tk()
 tk.title("Alpha Chat")
@@ -50,6 +51,7 @@ def configWindow(event):
 receiveBox = Text(canvas, bg='#fef9c7', width=49, height=20, font='verdana 11', state=DISABLED, bd=0)
 msgEntry = Entry(canvas, width=64, bg='#edeae5', font='verdana 11')
 titleLabel = Label(canvas, image=logo, bg='#fef9c7')
+userLabel = Label(canvas, bg='#fef9c7', font='verdana 11', text='Logged in as '+mainUser.username+'.')
 
 # Need a subscribe listener
 class SubListener(SubscribeCallback):
@@ -58,8 +60,7 @@ class SubListener(SubscribeCallback):
         # The status object returned is always related to subscribe but could contain
         # information about subscribe, heartbeat, or errors
         # use the operationType to switch on different options
-        if status.operation == PNOperationType.PNSubscribeOperation \
-                or status.operation == PNOperationType.PNUnsubscribeOperation:
+        if status.operation == PNOperationType.PNSubscribeOperation or status.operation == PNOperationType.PNUnsubscribeOperation:
             if status.category == PNStatusCategory.PNConnectedCategory:
                 pass
                 # This is expected for a subscribe, this means there is no error or issue whatsoever
@@ -118,25 +119,34 @@ def sendMessage(*args):
 def closeProtocol():
     pubnub.unsubscribe_all()
     tk.destroy()
+    sys.exit()
 
 def history_callback(result, status):
-    msgs = result.messages
-    #start = result.start_timetoken
-    #end = result.end_timetoken
-    history = ''''''
-    for i in msgs:
-        history += str(i.entry) + '\n'
-    receiveBox.config(state=NORMAL)
-    receiveBox.insert(END, history)
-    receiveBox.see(END)
-    receiveBox.config(state=DISABLED)
-    #envelope = pubnub.delete_messages() \
-    #.channel(channel) \
-    #.start(15640300853552356) \
-    #.end(15645532511500479) \
-    #.sync()
+    try:
+        msgs = result.messages
+        #start = result.start_timetoken
+        #end = result.end_timetoken
+        history = ''''''
+        for i in msgs:
+            history += str(i.entry) + '\n'
+        receiveBox.config(state=NORMAL)
+        receiveBox.insert(END, history)
+        receiveBox.see(END)
+        receiveBox.config(state=DISABLED)
+        #envelope = pubnub.delete_messages() \
+        #.channel(channel) \
+        #.start(15640300853552356) \
+        #.end(15645532511500479) \
+        #.sync()
+    except:
+        pass
 
 def mainScreen():
+    try:
+        requests.get('https://quanant.business.site/')
+    except:
+        box.showinfo('Network', 'Couldn\'t connect to the network. Please check your network connection, then restart the app.')
+        tk.destroy()
     titleLabel.place(x=0, y=0)
     setup()
     pnconfig = PNConfiguration()
@@ -151,11 +161,18 @@ def mainScreen():
     pubnub.subscribe().channels(channel).execute()
     receiveBox.place(relx=0.007, rely=0.21)
     msgEntry.place(relx=0.015, rely=0.92)
+    userLabel.place(relx=0.4, rely=0.05)
     msgEntry.bind("<Return>", sendMessage)
     history = pubnub.history().channel(channel).count(50).pn_async(history_callback)
     tk.protocol("WM_DELETE_WINDOW", closeProtocol)
+    if len(mainUser.username) < 1 or len(mainUser.username) > 12:
+        box.showinfo('Username', 'Please make your username between 1 and 12 characters long. You can do this in the Alpha Chat User Manager app.')
+        tk.destroy()
 
-mainScreen()
-configWindow(1)
-canvas.bind("<Configure>", configWindow)
-mainloop()
+try:
+    mainScreen()
+    configWindow(1)
+    canvas.bind("<Configure>", configWindow)
+    mainloop()
+except:
+    pass
