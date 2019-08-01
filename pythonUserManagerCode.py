@@ -1,11 +1,13 @@
 import pickle
 from tkinter import *
+from tkinter import messagebox as box
 import PIL.Image
 import PIL.ImageTk
 
 tk = Tk()
 tk.title("Alpha Chat User Manager")
 tk.iconbitmap('logo.ico')
+tk.resizable(0, 0)
 canvas = Canvas(bd=0, highlightthickness=0, width=400, height=300)
 canvas.pack()
 canvas.config(bg='#fef9c7')
@@ -27,15 +29,16 @@ def dump(*args):
     f = open("userInfo.dat", "wb")
     pickle.dump(user, f)
     f.close()
+    userEntry.delete(0, END)
+    box.showinfo('Username', 'Your username has been updated to "'+user.username+'".')
 
 titleLabel = Label(canvas, image=logo, bg='#fef9c7')
 userLabel = Label(canvas, text='Username:', bg='#fef9c7', font='verdana 20')
 userEntry = Entry(canvas, width=38, font='verdana 11', bg='#edeae5')
-goButton = Button(canvas, text="Update Data", command=dump, bg='#edeae5', font='verdana 14')
+goButton = Button(canvas, text="Update Username", command=dump, bg='#edeae5', font='verdana 14')
 userLabel.place(relx=0.33, rely=0.3)
 titleLabel.place(relx=0, rely=0)
 userEntry.place(relx=0.02, rely=0.45)
-goButton.place(relx=0.34, rely=0.7)
+goButton.place(relx=0.27, rely=0.7)
 
-if __name__ == '__main__':
-    mainloop()
+mainloop()
