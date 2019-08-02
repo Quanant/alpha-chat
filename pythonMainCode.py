@@ -142,11 +142,6 @@ def history_callback(result, status):
         pass
 
 def mainScreen():
-    try:
-        requests.get('https://quanant.business.site/')
-    except:
-        box.showinfo('Network', 'Couldn\'t connect to the network. Please check your network connection, then restart the app.')
-        tk.destroy()
     titleLabel.place(x=0, y=0)
     setup()
     pnconfig = PNConfiguration()
