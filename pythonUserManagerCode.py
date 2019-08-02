@@ -6,7 +6,7 @@ import PIL.ImageTk
 
 tk = Tk()
 tk.title("Alpha Chat User Manager")
-tk.iconbitmap('logo.ico')
+tk.iconbitmap('userLogo.ico')
 tk.resizable(0, 0)
 canvas = Canvas(bd=0, highlightthickness=0, width=400, height=300)
 canvas.pack()
